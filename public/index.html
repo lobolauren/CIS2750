@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GPS Data Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="GPS Data Viewer">
+    <meta name="keywords" content="GPS Data Viewer">
+    <meta name="author" content="GPS Data Viewer">
+    <!-- Load jquery, bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Custom CSS End -->
+</head>
+   <body>
+    <h2>GPS Data Viewer</h2>
+   <!--- If the A3 stub is running and simple.gpx exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
+    <a href="simple.gpx" download ">simple.gpx</a> -->
+    <p></p>
+   
+        
+  <!--  <hr>
+    <div id="blah">I am blah</div>
+    <hr>
+    <form ref='someform'
+          id='someform'>
+          <div class="form-group">
+                <label for="entryBox">Last Name</label>
+                <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+          </div>
+        <div class="form-group">
+            <input type='submit' class="btn btn-secondary">
+        </div>
+    </form>-->
+
+   
+      <!--start of file log panel-->
+    <div id = 'filelogpanel'>
+        <table id = 'filelogtable'>
+            <h1 style="text-align:center">File Log Table</h1>
+            <p></p>
+            <thead>
+                <tr>
+                    <th>File name (click to download) </th>
+                    <th>version</th>
+                    <th>creator</th>
+                    <th>Number of Waypoints</th>
+                    <th>Number of Routes</th>
+                    <th>Number of Tracks</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>  
+      <!--end of file log panel-->
+      <p></p>
+      <form ref='uploadForm'
+      id='uploadForm'
+    action='/upload'
+    method='post'
+    encType="multipart/form-data">
+    <div class="form-group">
+        <input type="file" name="uploadFile" class="btn btn-secondary">
+        <input type='submit' value='Upload' class="btn btn-secondary">
+    </div>
+    </form>
+    <p></p>
+    <!-- gpx view panel drop down menu-->
+    <div>
+        <div class="dropdown">
+            <button class="dropbtn">GPX View Files Dropdown</button>
+                    
+           <div id="gpxViewDropdown" class="dropdown-content">
+            </div>
+        </div>
+    </div>
+    
+      <p></p>
+      <!--gpx view panel-->
+      <div id='gpxviewpanel'>
+        <h1 style="text-align:center">GPX View Table</h1>
+        <p></p>
+        <table id = 'gpxviewtable'>
+            <thead>
+                <tr>
+                    <th> Component </th>
+                    <th> Name </th>
+                    <th> Number of points </th>
+                    <th> Length </th>
+                    <th> Loop </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+      </div>
+      <!--end of gpx view panel-->
+      <p></p>
+      <!--rename -->
+      <p>     
+        <h2 class="b">This heading is hidden</h2>
+   </p>
+
+      <div>  
+        <h2>Rename a Route/Track</h2>
+        
+        <form class="rename rttrk">
+            <label for="fname1">Enter Route/Track Name you would like to change then refresh the page and reselect the file:</label><br>
+            <input type="text" id="fname1" ><br>
+            <label for="lname1">Enter New Route/Track Name:</label><br>
+            <input type="text" id="lname1" ><br>
+            <input type="submit" id="sendRoutename" value="Rename">
+        </form> 
+      </div>
+       <!--end of rename -->
+       <p>     
+            <h2 class="b">This heading is hidden</h2>
+       </p>
+     
+             <!--create new gpx -->
+      <div>  
+        <h2>Create New GPX File</h2>
+        <form ref='gpxnewfile' id='gpxnewfile'>
+            <label for="gpxfile1">Enter the Name of the gpx file you would like to create (filename.gpx):</label><br>
+            <input type="text" id="gpxfile1" ><br>
+            <input type="submit" value="Create GPX">
+        </form> 
+      </div>
+       <!--end of create gpx -->
+       <p></p>
+       <p>     
+        <h2 class="b">This heading is hidden</h2>
+      </p>
+       <p></p>
+       <h4>Add a Route</h4>
+       <div class="dropdown">
+        Choose a File   <button class="dropbtn">GPX Files Dropdown</button>
+        <div id="gpxDropdown2" class="dropdown-content">
+        </div>
+      </div>
+      <div>  
+        <p></p>
+       <form ref='newroutename' id='newroutename'>
+            <label for="newroute22">New Route Name:</label>
+            <input type="text" id="newroute22" ><br>
+     </form> 
+       <table id = 'waytable'>
+        <tr>
+            <th>
+                Waypoint Latitude
+            </th>
+            <th>
+                Waypoint Longitude
+            </th>
+            <th>
+                Sumbit Waypoint
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input id="waylat1" type="text" />
+            </td>
+            <td>
+                <input id="waylon1" type="text" />
+            </td>
+            <td>
+                <div>
+                    <input type="submit" id="sendwaypointinfo" value="Add Waypoint">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <input type="submit" id="sendAddRouteInfo" value="Add Route">
+    </div>
+    
+    <p></p>
+    <p>     
+        <h2 class="b">This heading is hidden</h2>
+    </p>
+    <div id="infindpath">
+        <h2>Find Path Between: </h2><br>
+		<p>
+			<label for="lat1">Start Latitude:</label>
+			<input type="text" id="lat1"><br>
+		</p>
+		<p>
+			<label for="lon1">Start Longitude:</label>
+			<input type="text" id="lon1"><br>
+		</p>
+        <p>
+			<label for="lat2">End Latitude:</label>
+			<input type="text" id="lat2"><br>
+		</p>
+		<p>
+			<label for="lon2">End Longitude:</label>
+			<input type="text" id="lon2"><br>
+		</p>
+        <p>
+			<label for="delta">Delta:</label>
+			<input type="text" id="delta"><br>
+		</p>
+		<input type="submit" id="sendfindpath" value="Find Path">
+	</div>
+    <p>     
+     <h2 class="b">This heading is hidden</h2>
+   </p>
+    <div id='gpxfindpathpanel'>
+        <h1 style="text-align:center">GPX Find Path Between Table</h1>
+        <p></p>
+        <table id = 'gpxfindpathtable'>
+            <thead>
+                <tr>
+                    <th> Component </th>
+                    <th> Name </th>
+                    <th> Number of points </th>
+                    <th> Length </th>
+                    <th> Loop </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>route 1 </td>
+                    <td>some route</td>
+                    <td>3</td>
+                    <td>160m</td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td>track 1 </td>
+                    <td>Mount Steele Trail</td>
+                    <td>3</td>
+                    <td>170m</td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td>track 2 </td>
+                    <td>The best track</td>
+                    <td>3</td>
+                    <td>150m</td>
+                    <td>true</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+	
+      
+    <!-- Leave me at the bottom of body -->
+    <script src="index.js"></script>
+</body>
+</html>
