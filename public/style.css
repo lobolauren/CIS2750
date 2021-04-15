@@ -24,6 +24,16 @@ input[type=submit], button {
     cursor: pointer;
     cursor: hand;
 }
+.button3 {
+    background-color: #400B66; /* Green */
+    border: none;
+    color: white;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+  }
 @media(max-width: 900px) {
     html {
         font-size: 14px !important;
@@ -79,6 +89,10 @@ table {
     }
     #waytable{
         height: 150px; 
+        width:100%;
+        overflow-x:scroll;  
+    }#findsqltable{
+        height: 250px; 
         width:100%;
         overflow-x:scroll;  
     }
