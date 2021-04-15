@@ -7,6 +7,7 @@
 float calcDistance(float lat1, float lat2, float lon1, float lon2);
 void deleteDummy(void * data);
 
+char * routelistToJSON(char* filename);
 bool validateGPXFile(char * filename, char * schemafile);
 char *routeCompToJSON(int num,Route* route);
 
@@ -14,6 +15,8 @@ char *trackCompToJSON(int num,Track* track);
 
 char *GPXfileDetailstoJSON( char *filename);
 char * gpxDataToJSON(char *filename, char *name);
+char *waypointToJSON(Waypoint * wpt, int index);
+char *waypointsToJSON(char *filename,char* rtname);
 void deleteDummy(void * data){
     return;
 }
@@ -1367,6 +1370,11 @@ char* routeListToJSON(const List *list){
     strcat(json,"]");
     return json;
 }
+
+char * routelistToJSON(char* filename){
+    GPXdoc * doc = createGPXdoc(filename);
+    return (routeListToJSON(doc->routes));
+}
  
 char* trackListToJSON(const List *list){
    char * json = calloc(1000,sizeof(char));
@@ -1929,4 +1937,54 @@ char *createNewRoute(char*latlon,char*routename,char *filename,int length){
    // printf("hiiiii\n");
     writeGPXdoc(doc,filename);
     return filename;
+}
+
+
+char *waypointToJSON(Waypoint * wpt, int index){
+
+    if(wpt == NULL || index < 0){
+        char *json = calloc(1000,sizeof(char));
+        strcpy(json,"{}");
+        return json;
+    }
+    char *json = calloc(1000,sizeof(char));
+    char* name = calloc(256,sizeof(char));
+    if(strlen(wpt->name)==0){
+        strcat(name,"null");
+    }else{
+        sprintf(name,"\"%s\"",wpt->name);
+    }
+    sprintf(json,"{\"index\":%d,\"lat\":%.7f,\"lon\":%.7f,\"name\":%s}",index,wpt->latitude,wpt->longitude,name);
+    free(name);
+    return json;    
+}
+
+char *waypointsToJSON(char *filename,char* rtname){
+    if(filename == NULL || rtname ==NULL){
+        char *json = calloc(256,sizeof(char));
+        strcpy(json,"[]");
+        return json;
+    }
+    
+    GPXdoc *doc = createGPXdoc(filename);
+    Route *rt = getRoute(doc,rtname);
+    if(rt == NULL){
+        return "[]";
+    }
+    int memsize = 2500;
+    char *json = calloc(memsize,sizeof(char));
+    strcat(json,"[");
+    int counter = 0;
+    for(Node *node = rt->waypoints->head; node != NULL;node=node->next){
+        char * temp = waypointToJSON(node->data,counter);
+        counter++;
+        memsize+= strlen(temp) +10;
+        strcat(json,temp);
+        free(temp);
+        if(node->next != NULL){
+            strcat(json,",");
+        }
+    }
+    strcat(json,"]");
+    return json;
 }
