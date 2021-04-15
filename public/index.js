@@ -563,6 +563,26 @@ jQuery(document).ready(function() {
                                 alert("Failed to display status");
                             }else{
                                 alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                                jQuery.ajax({
+                                    type: 'get',
+                                    dataType: 'json',
+                                    url: '/gpxDropdowndatabase',
+                                    success:function(data){
+                                        //appending to dropdown menu
+                                     //   console.log("test before2");
+                                        for(var i =0; i<data.length;i++){
+                                            $('#routeviewDropdown').append("<option class=\"filesTag3\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                            $('#routeviewDropdown4').append("<option class=\"filesTag4\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                            $('#routeviewDropdown5').append("<option class=\"filesTag5\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                            //  console.log("second: " + data[i]);
+                                        }
+                                       // console.log("test after2");
+                                    },
+                                    
+                                    fail:function(error){
+                                        //if fails
+                                    }
+                                });      
                             }
                         },
                         fail:function(error){
@@ -597,6 +617,26 @@ jQuery(document).ready(function() {
                                             alert("Failed to display status");
                                         }else{
                                             alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                                            jQuery.ajax({
+                                                type: 'get',
+                                                dataType: 'json',
+                                                url: '/gpxDropdowndatabase',
+                                                success:function(data){
+                                                    //appending to dropdown menu
+                                                 //   console.log("test before2");
+                                                    for(var i =0; i<data.length;i++){
+                                                        $('#routeviewDropdown').append("<option class=\"filesTag3\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                                        $('#routeviewDropdown4').append("<option class=\"filesTag4\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                                        $('#routeviewDropdown5').append("<option class=\"filesTag5\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+                                                        //  console.log("second: " + data[i]);
+                                                    }
+                                                   // console.log("test after2");
+                                                },
+                                                
+                                                fail:function(error){
+                                                    //if fails
+                                                }
+                                            });   
                                         }
                                     },
                                     fail:function(error){
@@ -613,6 +653,9 @@ jQuery(document).ready(function() {
                     });
                 
     });
+
+
+    
 
     $(document).on("click","#cleartable",function(e){
         e.preventDefault();
@@ -770,7 +813,7 @@ jQuery(document).ready(function() {
     jQuery.ajax({
         type: 'get',
         dataType: 'json',
-        url: '/gpxDropdown2',
+        url: '/gpxDropdowndatabase',
         success:function(data){
             //appending to dropdown menu
          //   console.log("test before2");
@@ -922,7 +965,7 @@ $(document).on("click","#displaywaysqlpoints",function(e){
 jQuery.ajax({
     type: 'get',
     dataType: 'json',
-    url: '/gpxDropdown2',
+    url: '/gpxDropdowndatabase',
     success:function(data){
         //appending to dropdown menu
      //   console.log("test before2");
@@ -1055,7 +1098,7 @@ $(document).on("click","#sortwayall",function(e){
 jQuery.ajax({
     type: 'get',
     dataType: 'json',
-    url: '/gpxDropdown2',
+    url: '/gpxDropdowndatabase',
     success:function(data){
         //appending to dropdown menu
      //   console.log("test before2");
@@ -1081,7 +1124,7 @@ $(document).on('click','.filesTag5',function(){
     jQuery.ajax({
        type: 'get',
        dataType: 'json',
-       url: '/gpxDropdown2',
+       url: '/gpxDropdowndatabase',
        success: function(data){
            
        },
