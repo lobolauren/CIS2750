@@ -501,7 +501,7 @@ jQuery(document).ready(function() {
         jQuery.ajax({
             type: 'get',
             dataType: 'json',
-            url: '/addroutetotable',
+            url: '/populatetables',
             data:{
                 filename:addRouteFile,
             },
