@@ -174,6 +174,9 @@ app.get('/gpxDropdown2',function(req,res){
   res.send(validfiles);
 });
 
+
+
+
 app.get('/gpxViewTable',function(req,res){
   var fileName = "./uploads/"+req.query.filename;
   var json = parserlib.GPXfileDetailstoJSON(fileName);
@@ -377,6 +380,21 @@ app.get('/login',async function(req,res){
   
 });
 
+
+app.get('/gpxDropdowndatabase',async function(req,res){
+  try{
+    var filearray = [];
+    var [rows,fields] = await connection.execute(`SELECT * FROM FILE ORDER BY file_name;`);
+    for(let row of rows){
+      filearray.push(row.file_name);
+    }
+    res.send(filearray);
+    
+  }catch(e){
+    res.send(false);
+  }
+});
+
 function gpxtosqlTable(creator,version,fn){
   var headers = "(creator, ver, file_name)";
   var values = `(\"${creator}\", ${version}, \"${fn}\")`;
@@ -410,37 +428,28 @@ app.get("/addroutetotable", async function(req,res){
     var [rows,fields] = await connection.execute(`SELECT gpx_id FROM FILE WHERE file_name=\"${fileno}\";`);
     var gpxkey = rows[0].gpx_id;
     console.log("hi3");
-    console.log("gpxiddd: " + gpxkey);
+  //  console.log("gpxiddd: " + gpxkey);
     var rlist = JSON.parse(parserlib.routelistToJSON("./uploads/"+fileno));
     console.log("hi" + rlist);
     for(var i = 0; i < rlist.length;i++){
         var sql = routetoSQLTable(rlist[i].len,rlist[i].name,gpxkey);
         await connection.execute(sql);
         var route = rlist[i];
-        console.log("route: "+ route.name );
+        //console.log("route: "+ route.name );
         var way = parserlib.waypointsToJSON("./uploads/"+fileno,route.name);
         var [rows2,fields2] = await connection.execute(`SELECT route_id FROM ROUTE WHERE route_name =\"${route.name}\"`);
         var rtkey = rows2[0].route_id;
         var waylist = JSON.parse(way);
-        console.log("list "+waylist);
+       // console.log("list "+waylist);
         for(var j=0; j<waylist.length;j++){
-          console.log("in way loop");
+        //  console.log("in way loop");
           way = waylist[j];
           var waysql = waytoSQLTable(way.index,way.lat,way.lon,way.name,rtkey);
           await connection.execute(waysql);
         }
        // console.log("outside loop");
       }
-      var [rows6, fields6] = await connection.execute('SELECT * from `ROUTE`');
-    console.log("madeit");
-     for (let row of rows6){
-  
-         console.log("ID: "+row.route_id+" Last name: "+row.route_name+" len: "+row.route_len+" mark: "+row.gpx_id);
-         //json += ("{\"ID\":\""+row.route_id+"\",\"name\":\""+row.route_name+"\",\"len\":"+row.route_len+",\"gpx\":"+row.gpx_id+",\"filename\":\""+filename+"\"}," );
-        /* if(row+1 != NULL){
-            json+=",";
-         }*/
-     }
+     
     //var json = parserlib.waypointsToJSON(file,newroute);
     res.send(true);
   }catch(e){
