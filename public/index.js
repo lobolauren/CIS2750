@@ -1,7 +1,11 @@
 
 let gpxViewFile = "";
 let addRouteFile = "";
+let viewroutesFile ="";
+let q5file ="";
 let jsonlatlonstring ="";
+let overname ="";
+let viewpointsfile ="";
 let compnum2 = [];
 let waypointlon = [];
 let waypointlat = [];
@@ -38,6 +42,40 @@ function JSONtoViewRow(json){
     var html = "<tr><td><a href=\"#\" class=\"otherDataLink\">"+compnum+"</a></td>" + "<td>" + name 
                 + "</td>" + "<td>" + numpoints + "</td>" + "<td>" + len+ "</td>"
                 + "<td>" +loop + "</td></tr>"; 
+   // compname.push(html);
+   // console.log("yo" + compname);
+    return html;
+}
+
+function JSONtoSQL(json){
+    var obj = JSON.parse(JSON.stringify(json));
+    var rID = obj.ID;
+    var name = obj.name;
+    //compnum2.push(compnum + ":"+obj.name);
+   // var len = obj.len.toString();
+    var len = obj.len.toString();
+    var gpxID = obj.gpx.toString();
+    var file = obj.filename;
+    var html = "<tr><td>"+file+"</td>"+"<td>"+rID+"</td>" + "<td>" + name 
+                + "</td>" + "<td>" + len + "</td>" 
+                + "<td>" +gpxID + "</td></tr>"; 
+   // compname.push(html);
+   // console.log("yo" + compname);
+    return html;
+}
+function JSONtopointsSQL(json){
+    var obj = JSON.parse(JSON.stringify(json));
+    var rname = obj.Rname;
+    var index = obj.index.toString();
+    var len = obj.rlen.toString();
+    //compnum2.push(compnum + ":"+obj.name);
+   // var len = obj.len.toString();
+    var lat = obj.lat.toString();
+    var lon = obj.lon.toString();
+    var pname = obj.pname;
+    var html = "<tr><td>"+rname+"</td>"+"<td>"+len+"</td>" +"<td>"+index+"</td>" + "<td>" + lat 
+                + "</td>" + "<td>" + lon + "</td>" 
+                + "<td>" +pname + "</td></tr>"; 
    // compname.push(html);
    // console.log("yo" + compname);
     return html;
@@ -231,7 +269,7 @@ jQuery(document).ready(function() {
             //appending to dropdown menu
          //   console.log("test before2");
             for(var i =0; i<data.length;i++){
-                $('#gpxDropdown2').append("<a class=\"filesTag2\" href=\"#\" >" +data[i].replace("./uploads/","")+"</a>");
+                $('#routeviewDropdown2').append("<a class=\"filesTag2\" href=\"#\" >" +data[i].replace("./uploads/","")+"</a>");
               //  console.log("second: " + data[i]);
             }
            // console.log("test after2");
@@ -244,12 +282,13 @@ jQuery(document).ready(function() {
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
 
-    $('#sendRoutename').click(function(){
+    $(document).on('click','#sendRoutename',function(){
+     //   e.preventDefault();
         var ogName = '';
         var newName = '';
         ogName =  $('#fname1').val();
         newName = $('#lname1').val();
-        
+        overname = $('#lname1').val();
         console.log("heyyyyyyyyyyyyyyyy: " +ogName + newName);
         jQuery.ajax({
             type: 'get',
@@ -261,11 +300,44 @@ jQuery(document).ready(function() {
                 new: newName
             },
             success: function(data){
-                //console.log("data" + data);
-              //  alert("Please reselect the filename to see the new changes!");
+                console.log("datarenamee" + data);
+                alert("Please reselect the filename to see the new changes!");
+                var ogName = '';
+                var newName = '';
+                ogName =  $('#fname1').val();
+                newName = $('#lname1').val();
+                jQuery.ajax({
+                    type:'get',
+                    dataType:'json',
+                    url:'/renameupdate',
+                    data:{
+                        filename: gpxViewFile,
+                        original: ogName,
+                        new2: overname
+                    },
+                    success:function(data){
+                        jQuery.ajax({
+                            type:'get',
+                            dataType:'json',
+                            url:'/displaytables',
+                            success:function(data){
+                                if(data==false){
+                                    alert("Failed to display status");
+                                }else{
+                                    alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                                }
+                            },
+                            fail:function(error){
+
+                            }
+                        });
+                    },
+                    fail:function(error){
+                      //  alert("Failed to Store Tables");
+                    }
+                });
                 $('#gpxviewtable').find('tbody').append(JSONtoViewRow(data));
                // alert(JSONtoDataHtml(data));
-             //  alert("Please reselect the filename to see the new changes!");
             },
             fail:function(error){
                 //iffails
@@ -274,7 +346,9 @@ jQuery(document).ready(function() {
      });
     });
 
-    $('#gpxnewfile').click(function(){
+
+    $(document).on("click","#gpxnewfile",function(e){
+        e.preventDefault();
         var gpxfile = '';
         gpxfile =  $('#gpxfile1').val();
        // console.log("heyyyyyyyyyyyyyyyy: " +ogName + newName);
@@ -289,9 +363,10 @@ jQuery(document).ready(function() {
                     if(data != ""){
                         $('#filelogtable').find('tbody').append(JSONtoFileLogRow(data));
                         $('#gpxViewDropdown').append("<a class=\"filesTag\" href=\"#\" >" +gpxfile+"</a>");
-                        $('#gpxDropdown2').append("<a class=\"filesTag2\" href=\"#\" >" +gpxfile+"</a>");
+                        $('#routeviewDropdown2').append("<a class=\"filesTag2\" href=\"#\" >" +gpxfile+"</a>");
+                        alert("New File Created!");
                     }
-                  
+                   
             },
             fail:function(error){
                 //iffails
@@ -341,7 +416,7 @@ jQuery(document).ready(function() {
         waypointlat = [];
         waypointlon = [];
         addRouteFile = $(this).text().toString();
-         
+        alert("File: " + addRouteFile+" selected.");
     });
 
     $('#sendwaypointinfo').click(function(){
@@ -385,7 +460,7 @@ jQuery(document).ready(function() {
             success: function(data){
                jsonlatlonstring = data;
                console.log("THISTHEONE" + jsonlatlonstring);
-              
+               alert("Waypoint Added!");
             },
             fail:function(error){
                 //iffails
@@ -393,8 +468,8 @@ jQuery(document).ready(function() {
             }
      });
     });
-
-    $('#sendAddRouteInfo').click(function(){
+    $(document).on("click","#sendAddRouteInfo",function(e){
+        e.preventDefault();
         var route = $('#newroute22').val();
         var latlen = waypointlat.length;
         var lonlen = waypointlon.length;
@@ -413,7 +488,42 @@ jQuery(document).ready(function() {
                 jsons:jsonlatlonstring
             },
             success: function(data){
+                
                 $('#filelogtable').find('tbody').append(JSONtoFileLogRow(data));
+            },
+            fail:function(error){
+                //iffails
+                console.log("failed find path.");
+            }
+     });
+    });
+    $(document).on("click","#sendAddRouteInfo",function(e){
+        jQuery.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '/addroutetotable',
+            data:{
+                filename:addRouteFile,
+            },
+            success: function(data){
+                alert("Route Added!");
+                jQuery.ajax({
+                    type:'get',
+                    dataType:'json',
+                    url:'/displaytables',
+                    success:function(data){
+                        if(data==false){
+                            alert("Failed to display status");
+                        }else{
+                            alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                        }
+                    },
+                    fail:function(error){
+        
+                    }
+                });
+              //  $('#filelogtable').find('tbody').append(JSONtoFileLogRow(data));
+
             },
             fail:function(error){
                 //iffails
@@ -423,14 +533,682 @@ jQuery(document).ready(function() {
 
     });
 
+    
+  
+    //A4 functionality
 
-    $('#someform').submit(function(e){
-        $('#blah').html("Form has data: "+$('#entryBox').val());
+    $(document).on("click","#loginbutton",function(e){
         e.preventDefault();
-        //Pass data to the Ajax call, so it gets passed to the server
-        $.ajax({
-            //Create an object for connecting to another waypoint
+        var username = $("#loginid").val();
+        var password = $("#passwordid").val();
+        var database = $("#databaseid").val();
+        jQuery.ajax({
+            type: 'get',
+            dataType:'json',
+            url:'/login',
+            data:{
+                username:username,
+                pw:password,
+                db:database
+            },
+            success:function(data){
+                if(data ==true){
+                    alert("Successfully connected to database!");
+                    jQuery.ajax({
+                        type:'get',
+                        dataType:'json',
+                        url:'/displaytables',
+                        success:function(data){
+                            if(data==false){
+                                alert("Failed to display status");
+                            }else{
+                                alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                            }
+                        },
+                        fail:function(error){
+            
+                        }
+                    });
+                }else{
+                    alert("Failed to connect to database");
+                }
+            },
+            fail:function(error){
+
+            }
         });
     });
+
+    $(document).on("click","#storeallfilesbutton",function(e){
+        e.preventDefault();
+                    jQuery.ajax({
+                        type:'get',
+                        dataType:'json',
+                        url:'/populatetables',
+                        success:function(data){
+                            if(data == true){
+                                alert("Files have been stored!");
+                                jQuery.ajax({
+                                    type:'get',
+                                    dataType:'json',
+                                    url:'/displaytables',
+                                    success:function(data){
+                                        if(data==false){
+                                            alert("Failed to display status");
+                                        }else{
+                                            alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                                        }
+                                    },
+                                    fail:function(error){
+                        
+                                    }
+                                });
+                            }else{
+                                alert("Failed to Store Tables");
+                            }
+                        },
+                        fail:function(error){
+                          //  alert("Failed to Store Tables");
+                        }
+                    });
+                
+    });
+
+    $(document).on("click","#cleartable",function(e){
+        e.preventDefault();
+        jQuery.ajax({
+            type:'get',
+            dataType:'json',
+            url:'/cleartables',
+            success:function(data){
+                if(data==true){
+                    alert("Cleared Tables!");
+                    jQuery.ajax({
+                        type:'get',
+                        dataType:'json',
+                        url:'/displaytables',
+                        success:function(data){
+                            if(data==false){
+                                alert("Failed to display status");
+                            }else{
+                                alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                            }
+                        },
+                        fail:function(error){
+            
+                        }
+                    });
+                }else{
+                    alert("Failed to clear tables");
+                }
+            },
+            fail:function(error){
+
+            }
+        });
+    });
+   
+    $(document).on("click","#displaytables",function(e){
+        e.preventDefault();
+        jQuery.ajax({
+            type:'get',
+            dataType:'json',
+            url:'/displaytables',
+            success:function(data){
+                if(data==false){
+                    alert("Failed to display status");
+                }else{
+                    alert(`"Database has ${data.n1} files, ${data.n2} routes, and ${data.n3} points`);
+                }
+            },
+            fail:function(error){
+
+            }
+        });
+    });
+    $(document).on("click","#displaysqlroutes",function(e){
+        e.preventDefault();
+        $('#findsqltable').find('tbody').empty();
+        jQuery.ajax({
+            type:'get',
+            dataType:'json',
+            url:'/displayRoutestoTable',
+            success:function(data){
+                console.log("data" + data);
+                if(data.len ==0){
+                    alert("File is not in database or no routes!");
+                }else if(data ==false){
+                    alert("Please Sign into Database.");
+                }
+                console.log("data" + data);
+                for(var i =0; i< data.length;i++){
+                    $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+                }
+            },
+            fail:function(error){
+
+            }
+        });
+    });
+
+    $(document).on("click","#sortroutename",function(e){
+        e.preventDefault();
+        $('#findsqltable').find('tbody').empty();
+        jQuery.ajax({
+            type:'get',
+            dataType:'json',
+            url:'/displayRoutestoTableSorted',
+            success:function(data){
+                if(data.len ==0){
+                    alert("File is not in database or no routes!");
+                }else if(data ==false){
+                    alert("Please Sign into Database.");
+                }
+                console.log("data" + data);
+                for(var i =0; i< data.length;i++){
+                    $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+                }
+            },
+            fail:function(error){
+
+            }
+        });
+    });
+
+    
+    $(document).on("click","#sortroutelength",function(e){
+        e.preventDefault();
+        $('#findsqltable').find('tbody').empty();
+        jQuery.ajax({
+            type:'get',
+            dataType:'json',
+            url:'/displayRoutestoTablelensort',
+            success:function(data){
+                if(data.len ==0){
+                    alert("File is not in database or no routes!");
+                }else if(data ==false){
+                    alert("Please Sign into Database.");
+                }
+                console.log("data" + data);
+                for(var i =0; i< data.length;i++){
+                    $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+                }
+            },
+            fail:function(error){
+
+            }
+        });
+    });
+
+    $(document).on('click','.filesTag3',function(){
+        viewroutesFile = $(this).text().toString();
+        alert("File: " + viewroutesFile+" selected.");
+        //$('#gpxviewtable').find('tbody').empty();
+        //gpxViewFile = $(this).text().toString();
+        jQuery.ajax({
+           type: 'get',
+           dataType: 'json',
+           url: '/displayRoutestoTable2',
+           data:{
+               filename: gpxViewFile
+           },
+           success: function(data){
+               //append data to gpx view panel, 
+              
+               for(var i = 0; i < data.length ;i++){
+               console.log(data[i]);
+                   $('#gpxviewtable').find('tbody').append(JSONtoViewRow(data[i]));
+               }
+           },
+           fail:function(error){
+               //if console fails
+               console.log("error table");
+           }
+       });
+    });
+
+    jQuery.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: '/gpxDropdown2',
+        success:function(data){
+            //appending to dropdown menu
+         //   console.log("test before2");
+            for(var i =0; i<data.length;i++){
+                $('#routeviewDropdown').append("<option class=\"filesTag3\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+              //  console.log("second: " + data[i]);
+            }
+           // console.log("test after2");
+        },
+        
+        fail:function(error){
+            //if fails
+        }
+    });
+    jQuery.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: '/gpxDropdown2',
+        success:function(data){
+            //appending to dropdown menu
+         //   console.log("test before2");
+            for(var i =0; i<data.length;i++){
+                $('#routeviewDropdown2').append("<option class=\"filesTag2\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+              //  console.log("second: " + data[i]);
+            }
+           // console.log("test after2");
+        },
+        
+        fail:function(error){
+            //if fails
+        }
+    });
+
+
+//FOR QUERY 2 BUTTONS
+$(document).on("click","#displaysqlroutes2",function(e){
+    e.preventDefault();
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayRoutestoTable2',
+        data:{
+            file:viewroutesFile
+        },
+        success:function(data){
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database.");
+            }
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+$(document).on("click","#sortroutename2",function(e){
+    e.preventDefault();
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayRoutestoTableSorted2',
+        data:{
+            file:viewroutesFile
+        },
+        success:function(data){
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database.");
+            }
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+
+$(document).on("click","#sortroutelength2",function(e){
+    e.preventDefault();
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayRoutestoTablelensort2',
+        data:{
+            file:viewroutesFile
+        },
+        success:function(data){
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database.");
+            }
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+
+
+$(document).on("click","#displaywaysqlpoints",function(e){
+    e.preventDefault();
+    $('#findsqlwaypttable').find('tbody').empty();
+    var routename = $("#routesearch").val();
+    
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displaypointtosql',
+        data:{
+            rt:routename
+        },
+        success:function(data){
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("No route in database with that name.");
+            }
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqlwaypttable').find('tbody').append(JSONtopointsSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+jQuery.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/gpxDropdown2',
+    success:function(data){
+        //appending to dropdown menu
+     //   console.log("test before2");
+        for(var i =0; i<data.length;i++){
+            $('#routeviewDropdown4').append("<option class=\"filesTag4\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+          //  console.log("second: " + data[i]);
+          
+        }
+       // console.log("test after2");
+    },
+    
+    fail:function(error){
+        //if fails
+    }
+});
+
+$(document).on('click','.filesTag4',function(){
+    viewpointsfile = $(this).text().toString();
+    alert("File: " + viewpointsfile+" selected.");
+    $('#findsqlwaypttable').find('tbody').empty();
+    //$('#gpxviewtable').find('tbody').empty();
+    //gpxViewFile = $(this).text().toString();
+    jQuery.ajax({
+       type: 'get',
+       dataType: 'json',
+       url: '/displaypointstoTable2',
+       data:{
+           file: viewpointsfile
+       },
+       success: function(data){
+           
+       },
+       fail:function(error){
+           //if console fails
+           console.log("error table");
+       }
+   });
+});
+
+
+
+$(document).on("click","#sortwayname",function(e){
+    e.preventDefault();
+    $('#findsqlwaypttable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displaypointstoTableSorted',
+        data:{
+            file:viewpointsfile
+        },
+        success:function(data){
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqlwaypttable').find('tbody').append(JSONtopointsSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+$(document).on("click","#sortwaylength",function(e){
+    e.preventDefault();
+    $('#findsqlwaypttable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displaypointstoTableSortedlen',
+        data:{
+            file:viewpointsfile
+        },
+        success:function(data){
+            console.log("data" + data);
+            
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqlwaypttable').find('tbody').append(JSONtopointsSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+
+$(document).on("click","#sortwayall",function(e){
+    e.preventDefault();
+    $('#findsqlwaypttable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displaypointsq4',
+        data:{
+            file:viewpointsfile
+        },
+        success:function(data){
+            console.log("data" + data);
+            
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqlwaypttable').find('tbody').append(JSONtopointsSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+jQuery.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/gpxDropdown2',
+    success:function(data){
+        //appending to dropdown menu
+     //   console.log("test before2");
+        for(var i =0; i<data.length;i++){
+            $('#routeviewDropdown5').append("<option class=\"filesTag5\" href=\"#\" >" +data[i].replace("./uploads/","")+"</option>");
+          //  console.log("second: " + data[i]);
+        }
+       // console.log("test after2");
+    },
+    
+    fail:function(error){
+        //if fails
+    }
+});
+
+
+$(document).on('click','.filesTag5',function(){
+    q5file = $(this).text().toString();
+    alert("File: " + q5file+" selected.");
+    $('#findsqlwaypttable').find('tbody').empty();
+    //$('#gpxviewtable').find('tbody').empty();
+    //gpxViewFile = $(this).text().toString();
+    jQuery.ajax({
+       type: 'get',
+       dataType: 'json',
+       url: '/gpxDropdown2',
+       success: function(data){
+           
+       },
+       fail:function(error){
+           //if console fails
+           console.log("error table");
+       }
+   });
+});
+
+$(document).on("click","#sortq5",function(e){
+    e.preventDefault();
+    var n=$("#nval").val();
+    var lsv=$("#lsval").val();
+    if(lsv == "L" || lsv == "S"){
+        
+    }else{
+        alert("please enter L or S");
+    }
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayq5',
+        data:{
+            file:q5file,
+            nval:n,
+            ls:lsv
+        },
+        success:function(data){
+            console.log("data" + data);
+            
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+
+$(document).on("click","#sortq5len",function(e){
+    e.preventDefault();
+    var n=$("#nval").val();
+    var lsv=$("#lsval").val();
+    if(lsv == "L" || lsv == "S"){
+        
+    }else{
+        alert("please enter L or S");
+    }
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayq5len',
+        data:{
+            file:q5file,
+            nval:n,
+            ls:lsv
+        },
+        success:function(data){
+            console.log("data" + data);
+            
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
+$(document).on("click","#sortq5name",function(e){
+    e.preventDefault();
+    var n=$("#nval").val();
+    var lsv=$("#lsval").val();
+    if(lsv == "L" || lsv == "S"){
+        
+    }else{
+        alert("please enter L or S");
+    }
+    $('#findsqltable').find('tbody').empty();
+    jQuery.ajax({
+        type:'get',
+        dataType:'json',
+        url:'/displayq5name',
+        data:{
+            file:q5file,
+            nval:n,
+            ls:lsv
+        },
+        success:function(data){
+            console.log("data" + data);
+            
+            if(data.length==0){
+                alert("no Route!");
+            }else if(data ==false){
+                alert("Please Sign into Database and select a file.");
+            }
+            
+            console.log("data" + data);
+            for(var i =0; i< data.length;i++){
+                $('#findsqltable').find('tbody').append(JSONtoSQL(data[i]));
+            }
+        },
+        fail:function(error){
+
+        }
+    });
+});
+
 });//end of app.ready
 
