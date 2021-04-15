@@ -110,11 +110,11 @@
         <h2>Rename a Route/Track</h2>
         
         <form class="rename rttrk">
-            <label for="fname1">Enter Route/Track Name you would like to change then refresh the page and reselect the file:</label><br>
+            <label for="fname1">Choose a file in GPX View Table and Enter Route/Track Name you would like to change then reselect the file:</label><br>
             <input type="text" id="fname1" ><br>
             <label for="lname1">Enter New Route/Track Name:</label><br>
             <input type="text" id="lname1" ><br>
-            <input type="submit" id="sendRoutename" value="Rename">
+            <button type="button" id="sendRoutename">Rename</button>
         </form> 
       </div>
        <!--end of rename -->
@@ -138,12 +138,21 @@
       </p>
        <p></p>
        <h4>Add a Route</h4>
-       <div class="dropdown">
-        Choose a File   <button class="dropbtn">GPX Files Dropdown</button>
-        <div id="gpxDropdown2" class="dropdown-content">
-        </div>
+       
       </div>
-      <div>  
+      <div> 
+          
+        <div>
+            <div class="dropdown">
+                <label for="routeviewDropdown2">Pick a File:</label>
+                <select  name="routeviewDropdown2" id="routeviewDropdown2" class="dropbtn"></select >
+              
+                </div>
+            </div>
+        </div>  
+
+
+
         <p></p>
        <form ref='newroutename' id='newroutename'>
             <label for="newroute22">New Route Name:</label>
@@ -176,6 +185,7 @@
         </tr>
     </table>
     <div>
+        <br>Hit "Add Route" then Select file in View Panel to see results<br>
         <input type="submit" id="sendAddRouteInfo" value="Add Route">
     </div>
     
@@ -248,8 +258,146 @@
             </tbody>
         </table>
       </div>
-	
-      
+	<br>
+    <h2>Assignment 4 Functionality</h2>
+    <br>
+    <div>
+        <form ref="login" id="login">
+            <div>
+                <label for="login">
+                    username
+                </label>
+                <input type="text" id="loginid">
+                <br>
+                <label for="login">
+                    password
+                </label>
+                <input type="password" id="passwordid">
+                <br>
+                <label for="login">
+                    database
+                </label>
+                <input type="text" id="databaseid">
+                <br>
+                <input id="loginbutton" type="button" value="Login">
+                <br>
+            </div>
+        </form>
+    </div>
+    <div>
+        <br>
+        <button type ="button" id="storeallfilesbutton" >Store All Files</button><br>
+        <br>
+    </div>
+    <div>
+        <button type ="button" id="cleartable" >Clear All Tables</button><br>
+        <button type ="button" id="displaytables" >Display DB Status</button><br>
+    </div>
+    <div>
+        <br>Display All Routes(Query 1)<br>
+        <button type ="button" class="button3" id="displaysqlroutes">Display All Routes(Query 1)</button>
+        <button type ="button" class="button3" id="sortroutename" >Show Routes Sorted By Name</button>
+        <button type ="button" class="button3" id="sortroutelength" >Show Routes Sorted By Length</button>
+        <div>
+            <div class="dropdown">
+                <br>Display All Routes from File (Query 2)<br>
+                <label for="routeviewDropdown">Pick a File:</label>
+                <select  name="routeviewDropdown" id="routeviewDropdown" class="dropbtn"></select >
+            </div>
+                <button type ="button" class="button3" id="displaysqlroutes2">Display All File Routes(Query 2)</button>
+                <button type ="button" class="button3" id="sortroutename2" >Show Routes Sorted By Name</button>
+                <button type ="button" class="button3" id="sortroutelength2" >Show Routes Sorted By Length</button>
+            </div>
+        </div>
+        
+        </div>
+
+
+           <!--query 5-->
+           <div class="dropdown">
+            <br>Display N shortest/longest Points from File (Query 5)<br>
+            <label for="routeviewDropdown5">Pick a File:</label>
+            <select  name="routeviewDropdown5" id="routeviewDropdown5" class="dropbtn"></select >
+        </div>
+        <br>
+          <label for="nval">Enter N:</label>
+          <input type="text" id="nval">
+      <br>
+          <label for="lsval">Enter L/S:</label>
+          <input type="text" id="lsval">
+      <br>
+      <br>
+        <button type ="button" class="button3" id="sortq5" >Show Routes</button>
+        <button type ="button" class="button3" id="sortq5name" >Show Routes Sorted By Name</button>
+        <button type ="button" class="button3" id="sortq5len" >Show Routes Sorted By Length</button>
+    </div>
+
+
+    <div>
+        <p></p>
+        <h1 style="text-align:center">Query Route Table</h1>
+        <table id = 'findsqltable'>
+            <thead>
+                <tr>
+                    <th> Filename </th>
+                    <th> Route ID </th>
+                    <th> Route Name </th>
+                    <th> Route Length </th>
+                    <th> Gpx ID </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+      </div>
+      <!--start of point table-->
+      <div>
+        <div>
+            <br> Display All Points of a Route (Query 3)<br>
+            <p>
+                <label for="routesearch">Enter Route Name:</label>
+                <input type="text" id="routesearch"><br>
+            </p>
+            <button type ="button" class="button3" id="displaywaysqlpoints">Display All Points(Query 3)</button>
+           
+        </div>
+
+        <div>
+              <!--query 4-->
+            <div class="dropdown">
+                <br>Display All Points from File (Query 4)<br>
+                <label for="routeviewDropdown4">Pick a File:</label>
+                <select  name="routeviewDropdown4" id="routeviewDropdown4" class="dropbtn"></select >
+            </div>
+            <br>
+            <button type ="button" class="button3" id="sortwayall" >Show Points</button>
+            <button type ="button" class="button3" id="sortwayname" >Show Points Sorted By Name</button>
+            <button type ="button" class="button3" id="sortwaylength" >Show Points Sorted By Length</button>
+        </div>
+
+        <div>
+         
+
+<!--tableeeeeeeee-->
+        <p></p>
+        <h1 style="text-align:center">Query Point Table</h1>
+        <table id = 'findsqlwaypttable'>
+            <thead>
+                <tr>
+                    <th> Route Name </th>
+                    <th> Route Length </th>
+                    <th> Point Index </th>
+                    <th> Latitude </th>
+                    <th> Longitude </th>
+                    <th> Point Name </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+      </div>
+
+    
     <!-- Leave me at the bottom of body -->
     <script src="index.js"></script>
 </body>
