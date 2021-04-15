@@ -1,4 +1,3 @@
-
 let gpxViewFile = "";
 let addRouteFile = "";
 let viewroutesFile ="";
