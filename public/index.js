@@ -1,3 +1,4 @@
+
 let gpxViewFile = "";
 let addRouteFile = "";
 let viewroutesFile ="";
@@ -541,6 +542,9 @@ jQuery(document).ready(function() {
         var username = $("#loginid").val();
         var password = $("#passwordid").val();
         var database = $("#databaseid").val();
+        $("#routeviewDropdown").empty();
+        $("#routeviewDropdown4").empty();
+        $("#routeviewDropdown5").empty();
         jQuery.ajax({
             type: 'get',
             dataType:'json',
@@ -600,6 +604,9 @@ jQuery(document).ready(function() {
 
     $(document).on("click","#storeallfilesbutton",function(e){
         e.preventDefault();
+        $("#routeviewDropdown").empty();
+        $("#routeviewDropdown4").empty();
+        $("#routeviewDropdown5").empty();
                     jQuery.ajax({
                         type:'get',
                         dataType:'json',
@@ -658,6 +665,9 @@ jQuery(document).ready(function() {
 
     $(document).on("click","#cleartable",function(e){
         e.preventDefault();
+        $("#routeviewDropdown").empty();
+        $("#routeviewDropdown4").empty();
+        $("#routeviewDropdown5").empty();
         jQuery.ajax({
             type:'get',
             dataType:'json',
